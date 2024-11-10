@@ -31,7 +31,7 @@ if ($q) {
 }
 
 $count = $db->get_var('
-    SELECT SQL_CACHE COUNT(*)
+    SELECT  COUNT(*)
     FROM `privates`
     LEFT JOIN `users` on (
         `user_id` = `privates`.`user`

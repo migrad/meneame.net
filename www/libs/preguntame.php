@@ -104,8 +104,8 @@ class Preguntame
         $this->start_at = date('Y-m-d H:i:s', strtotime($this->start_at));
         $this->end_at = date('Y-m-d H:i:s', strtotime($this->end_at));
 
-        $this->sponsored = (bool)$this->sponsored;
-        $this->enabled = (bool)$this->enabled;
+        $this->sponsored = (int)$this->sponsored;
+        $this->enabled = (int)$this->enabled;
         $this->admin_id = (int)$current_user->user_id;
 
         $this->validate();

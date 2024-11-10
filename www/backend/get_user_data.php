@@ -81,7 +81,7 @@ unset($ips);
 $base = $globals['scheme'].'//'.$globals['server_name'].$globals['base_url_general'];
 
 $db->real_query('
-    SELECT SQL_CACHE
+    SELECT 
         `link_id`, `link_title`, `link_karma`, `link_votes`, `link_negatives`, `link_anonymous`,
         `link_comments`, `link_date`, `link_published_date`, `link_content_type`, `link_content`,
         `link_url`, `link_uri`, CONCAT("'.$base.'story/'.'", `link_uri`) AS `link_permalink`
@@ -99,7 +99,7 @@ while ($row = $query->fetch_assoc()) {
 $query->free();
 
 $db->real_query('
-    SELECT SQL_CACHE
+    SELECT 
         `comment_id`, `comment_date`, `comment_content`, `comment_order`, `comment_karma`, `comment_votes`,
         CONCAT("'.$base.'c/'.'", `comment_id`) AS `comment_permalink`,
         `link_title`, CONCAT("'.$base.'story/'.'", `link_uri`) AS `link_permalink`,
@@ -131,7 +131,7 @@ while ($row = $query->fetch_assoc()) {
 $query->free();
 
 $db->real_query('
-    SELECT SQL_CACHE
+    SELECT 
         `post_id`, `post_date`, `post_content`, `post_karma`, `post_votes`,
         CONCAT("'.$base.'notame/'.'", `post_id`) AS `post_permalink`,
         `media`.`id` AS `media_id`, `media`.`type` AS `media_type`, `media`.`user` AS `media_user`

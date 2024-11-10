@@ -23,6 +23,7 @@ class RGDB extends mysqli
     public $connect_timeout;
     public $ban_checked;
     public $max_rows;
+    public $persistent;
 
     public function __construct($dbuser = '', $dbpassword = '', $dbname = '', $dbhost = 'localhost', $check_ban = false)
     {
@@ -57,7 +58,7 @@ class RGDB extends mysqli
         $this->close();
     }
 
-    public function close()
+    public function close(): void
     {
         if (!$this->connected) {
             return;
@@ -74,12 +75,12 @@ class RGDB extends mysqli
         $this->connected = false;
     }
 
-    public function hide_errors()
+    public function hide_errors(): void
     {
         $this->show_errors = false;
     }
 
-    public function show_errors()
+    public function show_errors(): void
     {
         $this->show_errors = true;
     }
@@ -100,7 +101,7 @@ class RGDB extends mysqli
         }
     }
 
-    public function transaction()
+    public function transaction(): int
     {
         $this->in_transaction++;
 
@@ -113,7 +114,7 @@ class RGDB extends mysqli
         return $this->in_transaction;
     }
 
-    public function commit($flags = null, $name = null)
+    public function commit($flags = null, $name = null): bool
     {
         if ($this->in_transaction <= 0) {
             syslog(LOG_INFO, 'Error COMMIT, transaction = 0 ' . $_SERVER['SCRIPT_NAME']);
@@ -135,7 +136,7 @@ class RGDB extends mysqli
         return $r;
     }
 
-    public function rollback($flags = null, $name = null)
+    public function rollback($flags = null, $name = null): bool
     {
         if ($this->in_transaction <= 0) {
             syslog(LOG_INFO, 'Error ROLLBACK, transaction = 0 ' . $_SERVER['SCRIPT_NAME']);
@@ -158,23 +159,23 @@ class RGDB extends mysqli
     }
 
     // Reset the connection to the slave if it was using the master
-    public function barrier()
+    public function barrier(): void
     {
     }
 
-    public function connect($host = null, $username = null, $passwd = null, $dbname = null, $port = null, $socket = null)
+    public function connect($host = null, $username = null, $passwd = null, $dbname = null, $port = null, $socket = null): bool
     {
         if ($this->connected) {
-            return;
+            return true;
         }
 
-        @parent::init();
-        @parent::options(MYSQLI_OPT_CONNECT_TIMEOUT, $this->connect_timeout);
+        @$this->init();
+        @$this->options(MYSQLI_OPT_CONNECT_TIMEOUT, $this->connect_timeout);
 
         if ($this->persistent && version_compare(PHP_VERSION, '5.3.0') > 0) {
-            $this->connected = @parent::real_connect('p:' . $this->dbhost, $this->dbuser, $this->dbpassword, $this->dbname, $this->port);
+            $this->connected = @$this->real_connect('p:' . $this->dbhost, $this->dbuser, $this->dbpassword, $this->dbname, $this->port);
         } else {
-            $this->connected = @parent::real_connect($this->dbhost, $this->dbuser, $this->dbpassword, $this->dbname, $this->port);
+            $this->connected = @$this->real_connect($this->dbhost, $this->dbuser, $this->dbpassword, $this->dbname, $this->port);
         }
 
         if (!$this->connected) {
@@ -192,16 +193,18 @@ class RGDB extends mysqli
         if ($this->initial_query) {
             $this->query($this->initial_query);
         }
+
+        return true;
     }
 
-    public function escape($str)
+    public function escape($str): string
     {
         $this->connect();
 
         return $this->real_escape_string($str);
     }
 
-    public function print_error($str = '')
+    public function print_error($str = ''): bool
     {
         if ($this->show_errors) {
             if (headers_sent() === false) {
@@ -217,12 +220,12 @@ class RGDB extends mysqli
         return false;
     }
 
-    public function flush()
+    public function flush(): void
     {
         $this->last_result = array();
     }
 
-    public function query($query, $class_name = null, $index_name = null)
+    public function query($query, $class_name = null, $index_name = null): bool
     {
         $is_select = preg_match('/^\s*(select|show)\s/i', trim($query));
 
@@ -324,7 +327,7 @@ class RGDB extends mysqli
     }
 
     //  Function to get 1 column from the cached result set based in X index
-    public function get_col($query = null, $x = 0)
+    public function get_col($query = null, $x = 0): array
     {
         // If there is a query then perform it if not then use cached results..
         if ($query) {
@@ -354,7 +357,7 @@ class RGDB extends mysqli
         return $this->last_result ?: array();
     }
 
-    public function get_enum_values($table, $column)
+    public function get_enum_values($table, $column): array
     {
         if (($table === 'links') && ($column === 'link_status')) {
             return [
@@ -408,31 +411,31 @@ class ObjectIterator implements Iterator
         $this->result->free();
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->result->data_seek($this->position = 0);
         $this->currentRow = $this->result->fetch_object($this->class);
     }
 
-    public function next()
+    public function next(): void
     {
         $this->currentRow = $this->result->fetch_object($this->class);
         ++$this->position;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return $this->position < $this->result->num_rows;
     }
 
-    public function current()
+    public function current(): mixed
     {
         $this->currentRow->read = true;
 
         return $this->currentRow;
     }
 
-    public function key()
+    public function key():mixed
     {
         return $this->position;
     }
@@ -446,7 +449,7 @@ class QueryResult extends MySQLi_Result implements IteratorAggregate
         $this->class = $class;
     }
 
-    public function getIterator()
+    public function getIterator(): ObjectIterator
     {
         return new ObjectIterator($this, $this->class);
     }

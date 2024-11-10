@@ -19,7 +19,7 @@ $offset=($current_page-1)*$page_size;
 
 // Select a month and year
 if (!empty($_GET['month']) && !empty($_GET['year']) && ($month = (int) $_GET['month']) > 0 && ($year = (int) $_GET['year'])) {
-    $sql = "SELECT SQL_CACHE link_id, link_votes as votes FROM sub_statuses, links WHERE id = ".SitesMgr::my_id()." AND YEAR(date) = $year AND MONTH(date) = $month AND status = 'published' AND link = link_id ORDER BY link_votes DESC ";
+    $sql = "SELECT  link_id, link_votes as votes FROM sub_statuses, links WHERE id = ".SitesMgr::my_id()." AND YEAR(date) = $year AND MONTH(date) = $month AND status = 'published' AND link = link_id ORDER BY link_votes DESC ";
     $time_link = "YEAR(date) = $year AND MONTH(date) = $month";
 } else {
     // Select from a start date

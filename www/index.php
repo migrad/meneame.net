@@ -19,7 +19,6 @@
 // You can get copies of the licenses here:
 //      http://www.affero.org/oagpl.html
 // AFFERO GENERAL PUBLIC LICENSE is also included in the file called "COPYING".
-
 require_once __DIR__.'/config.php';
 require_once mnminclude.'html1.php';
 
@@ -150,7 +149,7 @@ if (($sponsor = Sponsor::getCurrent()) && ($sponsored_link = Link::from_db($spon
 }
 
 if (!$rows) {
-    $rows = $db->get_var('SELECT SQL_CACHE count(*) FROM sub_statuses '.$from.' WHERE '.$where.';');
+    $rows = $db->get_var('SELECT  count(*) FROM sub_statuses '.$from.' WHERE '.$where.';');
 }
 
 // We use a "INNER JOIN" in order to avoid "order by" whith filesorting. It was very bad for high pages
@@ -166,7 +165,6 @@ $sql = '
 ';
 
 $links = $db->get_results($sql, 'Link');
-
 if ($links) {
     $all_ids = array_map(function ($value) {
         return $value->id;

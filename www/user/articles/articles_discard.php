@@ -11,14 +11,14 @@ $query = '
     )
 ';
 
-$count = $db->get_var('SELECT SQL_CACHE COUNT(*) '.$query.';');
+$count = $db->get_var('SELECT  COUNT(*) '.$query.';');
 
 if ($count === 0) {
     return Haanga::Load('user/empty.html');
 }
 
 $links = $db->get_col('
-    SELECT SQL_CACHE link_id
+    SELECT  link_id
     '.$query.'
     ORDER BY link_date DESC
     LIMIT '.$offset.', '.$limit.';

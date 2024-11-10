@@ -334,7 +334,7 @@ class LinkValidator
         }
 
         $count = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_status != "published"
@@ -363,7 +363,7 @@ class LinkValidator
         }
 
         $queued = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links, subs, sub_statuses
             WHERE (
                 status != "published"
@@ -400,7 +400,7 @@ class LinkValidator
 
         // Check the number of links sent by the user in the last MINUTEs
         $queued = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_status = "queued"
@@ -427,7 +427,7 @@ class LinkValidator
         list($limit, $interval) = $this->getUserLimitInterval();
 
         $count = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_date > DATE_SUB(NOW(), INTERVAL '.$interval.' HOUR)
@@ -449,7 +449,7 @@ class LinkValidator
         list($limit, $interval) = $this->getUserLimitInterval();
 
         $count = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_date > DATE_SUB(NOW(), INTERVAL '.$interval.' HOUR)
@@ -471,7 +471,7 @@ class LinkValidator
         list($limit, $interval) = $this->getUserLimitInterval();
 
         $count = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_date > DATE_SUB(NOW(), INTERVAL '.$interval.' HOUR)
@@ -534,7 +534,7 @@ class LinkValidator
         }
 
         $count = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_author = "'.$this->user_id.'"
@@ -565,7 +565,7 @@ class LinkValidator
         }
 
         $count = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links, subs, sub_statuses
             WHERE (
                 link_author = "'.$this->user_id.'"
@@ -599,7 +599,7 @@ class LinkValidator
         }
 
         $limit = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links, subs, sub_statuses
             WHERE (
                 link_date > DATE_SUB(NOW(), INTERVAL '.(int) $hours.' HOUR)
@@ -612,7 +612,7 @@ class LinkValidator
         ');
 
         $count = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links, subs, sub_statuses
             WHERE (
                 link_date > DATE_SUB(NOW(), INTERVAL '.(int) $hours.' HOUR)
@@ -642,7 +642,7 @@ class LinkValidator
         global $globals, $db;
 
         $count = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_date > DATE_SUB(NOW(), INTERVAL '.(int) $hours.' HOUR)
@@ -668,7 +668,7 @@ class LinkValidator
         global $globals, $db;
 
         $count = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_date > DATE_SUB(NOW(), INTERVAL '.(int) $minutes.' MINUTE)
@@ -700,7 +700,7 @@ class LinkValidator
         }
 
         $count = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_author = "'.$this->user_id.'"
@@ -740,7 +740,7 @@ class LinkValidator
 
         // check there is no an 'overflow' FROM the same site
         $site = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links, subs, sub_statuses
             WHERE (
                 link_date > DATE_SUB(NOW(), INTERVAL '.(int) $hours.' HOUR)
@@ -759,7 +759,7 @@ class LinkValidator
         }
 
         $time = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links, subs, sub_statuses
             WHERE (
                 link_date > DATE_SUB(NOW(), INTERVAL '.(int) $hours.' HOUR)
@@ -809,7 +809,7 @@ class LinkValidator
         $minutes = intval($globals['draft_time'] / 60) + 10;
 
         return $this->userDrafts = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_author = "'.$this->user_id.'"
@@ -829,7 +829,7 @@ class LinkValidator
         }
 
         return $this->userVotes = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM votes
             WHERE (
                 vote_type = "links"
@@ -848,7 +848,7 @@ class LinkValidator
         }
 
         return $this->userLinks = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_author = "'.$this->user_id.'"
@@ -867,7 +867,7 @@ class LinkValidator
         }
 
         return $this->userSent = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE link_author = "'.$this->user_id.'";
         ') - $this->getUserDrafts();
@@ -882,7 +882,7 @@ class LinkValidator
         }
 
         return $this->userSentRecent = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_author = "'.$this->user_id.'"
@@ -900,7 +900,7 @@ class LinkValidator
         }
 
         return $this->linksQueded = (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_date > DATE_SUB(NOW(), INTERVAL 24 HOUR)

@@ -16,7 +16,7 @@ $query = '
     )
 ';
 
-$count = (int)$db->get_var('SELECT SQL_CACHE COUNT(*) '.$query.';');
+$count = (int)$db->get_var('SELECT  COUNT(*) '.$query.';');
 
 if ($count === 0) {
     return Haanga::Load('user/empty.html');
@@ -33,7 +33,7 @@ if ($sort === 'votes') {
 }
 
 $links = $db->get_results('
-    SELECT SQL_CACHE link_id, vote_value
+    SELECT  link_id, vote_value
     '.$query.'
     ORDER BY '.$order.'
     LIMIT '.(int)$offset.', '.(int)$limit.';

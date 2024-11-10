@@ -477,7 +477,7 @@ class SphinxClient
 
     public function __destruct()
     {
-        if ($this->_socket !== false) {
+        if (!is_null($this->_socket) && $this->_socket !== false) {
             fclose($this->_socket);
         }
     }

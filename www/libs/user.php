@@ -692,12 +692,12 @@ class User
             return; // Don't calculate stats por bots
         } else {
             $obj = (object)[
-                'total_votes' => (int) $db->get_var("SELECT SQL_CACHE COUNT(*) FROM votes WHERE vote_type='links' and vote_user_id = $this->id;"),
-                'total_links' => (int) $db->get_var("SELECT SQL_CACHE COUNT(*) FROM links WHERE link_author = $this->id and link_votes > 0;"),
-                'published_links' => (int) $db->get_var("SELECT SQL_CACHE COUNT(*) FROM links WHERE link_author = $this->id AND link_status = 'published';"),
-                'total_comments' => (int) $db->get_var("SELECT SQL_CACHE COUNT(*) FROM comments WHERE comment_user_id = $this->id;"),
-                'total_posts' => (int) $db->get_var("SELECT SQL_CACHE COUNT(*) FROM posts WHERE post_user_id = $this->id;"),
-                'total_friends' => (int) $db->get_var("SELECT SQL_CACHE COUNT(*) FROM friends WHERE friend_to = $this->id;"),
+                'total_votes' => (int) $db->get_var("SELECT  COUNT(*) FROM votes WHERE vote_type='links' and vote_user_id = $this->id;"),
+                'total_links' => (int) $db->get_var("SELECT  COUNT(*) FROM links WHERE link_author = $this->id and link_votes > 0;"),
+                'published_links' => (int) $db->get_var("SELECT  COUNT(*) FROM links WHERE link_author = $this->id AND link_status = 'published';"),
+                'total_comments' => (int) $db->get_var("SELECT  COUNT(*) FROM comments WHERE comment_user_id = $this->id;"),
+                'total_posts' => (int) $db->get_var("SELECT  COUNT(*) FROM posts WHERE post_user_id = $this->id;"),
+                'total_friends' => (int) $db->get_var("SELECT  COUNT(*) FROM friends WHERE friend_to = $this->id;"),
                 'total_images' => Upload::user_uploads($this->id) - Upload::user_uploads($this->id, false, 'private'),
             ];
 
@@ -866,7 +866,7 @@ class User
         }
 
         $value = (int)$db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM users
             WHERE user_karma > "'.(float)$this->karma.'";
         ') + 1;
@@ -1111,7 +1111,7 @@ class User
         }, $users[1]);
 
         $query = '
-            SELECT SQL_CACHE `users`.`user_login`
+            SELECT  `users`.`user_login`
             FROM `friends`, `users`
             WHERE (
                 `users`.`user_login` IN ("'.implode('","', $users).'")
@@ -1153,7 +1153,7 @@ class User
         }
 
         $query = '
-            SELECT SQL_CACHE `comments`.`comment_order`
+            SELECT  `comments`.`comment_order`
             FROM `comments`, `friends`, `users`
             WHERE (
                 `comments`.`comment_link_id` = "'.(int)$link->id.'"

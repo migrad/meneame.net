@@ -1949,6 +1949,7 @@ function show_errors($enabled = true)
 
     static $previous;
 
+    $enabled = true;
     ini_set('display_errors', (int) $enabled);
     ini_set('display_startup_errors', (int) $enabled);
 
@@ -1957,7 +1958,7 @@ function show_errors($enabled = true)
     }
 
     if ($enabled) {
-        error_reporting(E_ERROR | E_WARNING | E_PARSE);
+        error_reporting(E_ERROR);
 
         if ($db && is_object($db)) {
             $db->show_errors();

@@ -11,7 +11,7 @@ require_once mnmpath.'/../vendor/autoload.php';
 global $globals;
 
 $globals['start_time'] = microtime(true);
-$globals['now'] = intval($globals['start_time']);
+$globals['now'] = (int)$globals['start_time'];
 
 register_shutdown_function('shutdown');
 

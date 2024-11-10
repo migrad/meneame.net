@@ -563,7 +563,7 @@ class Link extends LCPBase
         }
 
         return (int) $db->get_var('
-            SELECT SQL_CACHE COUNT(*)
+            SELECT  COUNT(*)
             FROM links
             WHERE (
                 link_status = "discard"
@@ -1072,11 +1072,19 @@ class Link extends LCPBase
         $link_anonymous = $this->anonymous;
         $link_karma = $this->karma;
         $link_votes_avg = $this->votes_avg;
-        $link_randkey = $this->randkey;
+        $link_randkey = (int)$this->randkey;
         $link_date = $this->date;
         $link_sent_date = $this->sent_date;
-        $link_published_date = $this->published_date;
+        $link_published_date = ($this->published_date === 0  || is_null($this->published_date)) ? 'NULL' : $this->published_date;
         $link_content_type = $db->escape($this->content_type);
+        $link_url = $db->escape($this->url);
+        $link_uri = $db->escape($this->uri);
+        $link_url_title = $db->escape($this->url_title);
+        $link_title = $db->escape($this->title);
+        $link_tags = $db->escape($this->tags);
+        $link_content = $db->escape($this->content);
+        $link_thumb_status = $db->escape($this->thumb_status);
+        $link_nsfw = $this->nsfw ? 1 : 0;
 
         $db->transaction();
 
@@ -1099,7 +1107,15 @@ class Link extends LCPBase
                     `link_votes_avg` = "'.$link_votes_avg.'",
                     `link_content_type` = "'.$link_content_type.'",
                     `link_ip_int` = "'.$this->ip_int.'",
-                    `link_ip` = "'.$db->escape($this->ip).'";
+                    `link_ip` = "'.$db->escape($this->ip).'",
+                    `link_url` = "'.$link_url.'",
+                    `link_uri` = "'.$link_uri.'",
+                    `link_url_title` = "'.$link_url_title.'",
+                    `link_title` = "'.$link_title.'",
+                    `link_content` = "'.$link_content.'",
+                    `link_tags` = "'.$link_tags.'",
+                    `link_thumb_status` = "'.$link_thumb_status.'",
+                    `link_nsfw` = "'.$link_nsfw.'";
             ');
 
             $this->id = $db->insert_id;
@@ -1307,7 +1323,7 @@ class Link extends LCPBase
             $this->negative_text = false;
 
             $negatives = $db->get_row('
-                SELECT SQL_CACHE vote_value, COUNT(vote_value) AS `count`
+                SELECT  vote_value, COUNT(vote_value) AS `count`
                 FROM votes
                 WHERE (
                     vote_type = "links"
@@ -1326,7 +1342,7 @@ class Link extends LCPBase
 
         if ($karma_best_comment > 0 && $this->comments > 0 && $this->comments < 50 && $globals['now'] - $this->date < 86400) {
             $this->best_comment = $db->get_row('
-                SELECT SQL_CACHE comment_id, comment_order, comment_content AS content_full,
+                SELECT  comment_id, comment_order, comment_content AS content_full,
                     comment_date, comment_modified, SUBSTR(comment_content, 1, 225) AS content,
                     user_id, user_login, user_avatar
                 FROM comments
@@ -1398,7 +1414,7 @@ class Link extends LCPBase
         }
 
         $this->best_comments = $db->get_results('
-            SELECT SQL_CACHE comment_id, comment_order, comment_content AS content_full,
+            SELECT  comment_id, comment_order, comment_content AS content_full,
                 comment_date, comment_modified, SUBSTR(comment_content, 1, 225) AS content,
                 user_id, user_login, user_avatar
             FROM comments
@@ -1924,7 +1940,7 @@ class Link extends LCPBase
 
         if (!$globals['users_karma_avg']) {
             $globals['users_karma_avg'] = (float) $db->get_var(
-                "select SQL_NO_CACHE avg(link_votes_avg) from links where link_status = 'published' and link_date > date_sub(now(), interval 72 hour)"
+                "select avg(link_votes_avg) from links where link_status = 'published' and link_date > date_sub(now(), interval 72 hour)"
             );
         }
 
@@ -1939,12 +1955,12 @@ class Link extends LCPBase
         // low =~ users with higher karma less-equal than average
         $votes_pos = $votes_neg = $karma_pos_user_high = $karma_pos_user_low = $karma_neg_user = 0;
 
-        $votes_pos_anon = intval($db->get_var(
-            "select SQL_NO_CACHE count(*) from votes where vote_type='links' AND vote_link_id=$this->id and vote_user_id = 0 and vote_value > 0"
-        ));
+        $votes_pos_anon = (int)$db->get_var(
+            "select count(*) from votes where vote_type='links' AND vote_link_id=$this->id and vote_user_id = 0 and vote_value > 0"
+        );
 
         $votes = $db->get_results(
-            "select SQL_NO_CACHE user_id, vote_value, user_karma from votes, users where vote_type='links' AND vote_link_id=$this->id and vote_user_id > 0 and vote_user_id = user_id and user_level !='disabled'"
+            "select user_id, vote_value, user_karma from votes, users where vote_type='links' AND vote_link_id=$this->id and vote_user_id > 0 and vote_user_id = user_id and user_level !='disabled'"
         );
 
         $n = $vlow = $vhigh = $diff = 0;
@@ -1983,23 +1999,23 @@ class Link extends LCPBase
         }
 
         echo "Affinity Difference: $diff Base: "
-        .intval($karma_pos_user_high + $karma_pos_user_low + $karma_neg_user)
+        . (int)($karma_pos_user_high + $karma_pos_user_low + $karma_neg_user)
             ." ($n, $votes_pos)\n";
 
         if ($n > $votes_pos / 5) {
-            $this->annotation .= intval($n / $votes_pos * 100)._('% de votos con afinidad elevada')."<br/>";
+            $this->annotation .= (int)($n / $votes_pos * 100) ._('% de votos con afinidad elevada')."<br/>";
         }
 
-        $karma_pos_ano = intval($db->get_var('
-            SELECT SQL_NO_CACHE SUM(vote_value)
+        $karma_pos_ano = (int)$db->get_var('
+            SELECT SUM(vote_value)
             FROM votes
             WHERE (
                 vote_type = "links"
-                AND vote_link_id = "'.$this->id.'"
+                AND vote_link_id = "' . $this->id . '"
                 AND vote_user_id = 0
                 AND vote_value > 0
             );
-        '));
+        ');
 
         if ($this->votes != $votes_pos || $this->anonymous != $votes_pos_anon || $this->negatives != $votes_neg) {
             $this->votes = $votes_pos;
@@ -2009,7 +2025,7 @@ class Link extends LCPBase
 
         // Make sure we don't deviate too much from the average (it avoids vote spams and abuses)
         if ($karma_pos_user_high == 0 || $karma_pos_user_low / $karma_pos_user_high > 1.15) {
-            $perc = intval($vlow / ($vlow + $vhigh) * 100);
+            $perc = (int)($vlow / ($vlow + $vhigh) * 100);
 
             $this->low_karma_perc = $perc;
             $this->annotation .= $perc._('% de votos con karma menores que la media')

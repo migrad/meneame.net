@@ -42,7 +42,7 @@ define('config_done', 1);
 // $globals['cookies_domain'] = '.domain.com';
 
 // If you want for force all html connection to pass throu ssl
-// $globals['force_ssl'] = True;
+ $globals['force_ssl'] = false;
 
 // Specify the name of the ssl server, ensure you have also setup "cookies_domain
 $globals['ssl_server'] = false;
@@ -78,7 +78,7 @@ $globals['behind_load_balancer'] = false; // LB as those in Amazon EC2 don't sen
 $globals['db_server'] = 'localhost';
 $globals['db_name'] = 'meneame';
 $globals['db_user'] = 'meneame';
-$globals['db_password'] = '';
+$globals['db_password'] = '1234';
 $globals['db_use_transactions'] = true; // Disable it if you use MyISAM and have high loads
 
 // Administrator email
@@ -283,7 +283,7 @@ $globals['haanga_cache'] = '/var/tmp';
 $globals['haanga_templates'] = 'templates';
 
 //$globals['lucene_dir'] = mnmpath.'/'.$globals['cache_dir'].'/lucene_links';
-$globals['sphinx_server'] = 'localhost';
+$globals['sphinx_server'] = false; //'localhost';
 $globals['sphinx_port'] = 9312;
 
 $globals['avatars_check_always'] = true;
@@ -470,6 +470,7 @@ $globals['user_agent'] = 'Meneamebot (http://meneame.net/)';
 //$globals['admin_account_id'] = 0; // Id of admin account (used in sneakme admin posts)
 
 $globals['debug'] = false;
+//$globals['debug'] = true;
 
 // Send logs to "log_user", it's windows compatible
 openlog('meneame', LOG_ODELAY, LOG_USER);

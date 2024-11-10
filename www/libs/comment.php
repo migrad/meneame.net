@@ -473,7 +473,7 @@ class Comment extends LCPBase
     {
         global $db;
 //TODO
-        return $this->username = $db->get_var("SELECT SQL_CACHE user_login FROM users WHERE user_id = $this->author");
+        return $this->username = $db->get_var("SELECT  user_login FROM users WHERE user_id = $this->author");
     }
 
     // Add calls for tooltip javascript functions

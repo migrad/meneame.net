@@ -135,8 +135,6 @@ class Haanga
                     self::$compiler = $value;
                 }
                 break;
-            default:
-                continue;
             }
         }
     }

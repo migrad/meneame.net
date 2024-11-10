@@ -27,7 +27,7 @@ $globals['extra_css_after'] = array();
 $globals['extra_vendor_js'] = array();
 $globals['extra_vendor_css'] = array();
 
-if (!$globals['bot'] && ($globals['allow_partial'] || preg_match('/meneame/i', $_SERVER['HTTP_USER_AGENT']))) {
+if (!$globals['bot'] && ((array_key_exists('allow_partial', $globals) && $globals['allow_partial']) || preg_match('/meneame/i', $_SERVER['HTTP_USER_AGENT']))) {
     if (!$globals['mobile']) {
         $globals['ads'] = false;
     }
@@ -737,10 +737,10 @@ function do_best_story_comments($link)
 
     if ($link->comments > 30 && $globals['now'] - $link->date < 86400 * 4) {
         $do_cache = true;
-        $sql_cache = 'SQL_NO_CACHE';
+        $sql_cache = '';
     } else {
         $do_cache = false;
-        $sql_cache = 'SQL_CACHE';
+        $sql_cache = '';
     }
 
     $key = 'best_story_comments_' . $globals['v'] . '_' . $link->id;

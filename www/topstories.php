@@ -19,7 +19,7 @@ $offset=($current_page-1)*$page_size;
 
 // Select a month and year
 if (!empty($_GET['month']) && !empty($_GET['year']) && ($month = (int) $_GET['month']) > 0 && ($year = (int) $_GET['year'])) {
-    $sql = "SELECT SQL_CACHE link_id, link_votes as votes FROM links, sub_statuses WHERE id = ".SitesMgr::my_id()." AND YEAR(date) = $year AND MONTH(date) = $month AND status = 'published' AND link = link_id ORDER BY link_votes DESC ";
+    $sql = "SELECT  link_id, link_votes as votes FROM links, sub_statuses WHERE id = ".SitesMgr::my_id()." AND YEAR(date) = $year AND MONTH(date) = $month AND status = 'published' AND link = link_id ORDER BY link_votes DESC ";
     $time_link = "YEAR(date) = $year AND MONTH(date) = $month AND";
 } else {
     // Select from a start date
@@ -36,11 +36,11 @@ if (!empty($_GET['month']) && !empty($_GET['year']) && ($month = (int) $_GET['mo
     if ($range_values[$from] > 0) {
         // we use this to allow sql caching
         $from_time = '"'.date("Y-m-d H:i:00", time() - 86400 * $range_values[$from]).'"';
-        $sql = "SELECT SQL_CACHE link_id, link_votes-link_negatives as votes FROM links, sub_statuses WHERE id = ".SitesMgr::my_id()." AND date > $from_time AND status = 'published' AND link_id = link ORDER BY votes DESC ";
+        $sql = "SELECT  link_id, link_votes-link_negatives as votes FROM links, sub_statuses WHERE id = ".SitesMgr::my_id()." AND date > $from_time AND status = 'published' AND link_id = link ORDER BY votes DESC ";
         $time_link = "date > $from_time AND";
     } else {
         // Default
-        $sql = "SELECT SQL_CACHE link_id, link_votes-link_negatives as votes FROM links, sub_statuses WHERE id = ".SitesMgr::my_id()." AND status = 'published' AND link = link_id ORDER BY votes DESC ";
+        $sql = "SELECT  link_id, link_votes-link_negatives as votes FROM links, sub_statuses WHERE id = ".SitesMgr::my_id()." AND status = 'published' AND link = link_id ORDER BY votes DESC ";
         $time_link = '';
     }
 }

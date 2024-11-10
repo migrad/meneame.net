@@ -4,7 +4,7 @@ include(mnminclude.'user.php');
 
 header("Content-Type: text/plain");
 
-$users = $db->get_results("SELECT SQL_NO_CACHE user_id from users");
+$users = $db->get_results("SELECT user_id from users");
 $no_calculated = 0;
 $calculated = 0;
 foreach($users as $dbuser) {

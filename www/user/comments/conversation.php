@@ -2,7 +2,7 @@
 defined('mnminclude') or die();
 
 $count = (int)$db->get_var('
-    SELECT SQL_CACHE COUNT(DISTINCT(conversation_from))
+    SELECT  COUNT(DISTINCT(conversation_from))
     FROM conversations
     WHERE (
         conversation_user_to = "'.(int)$user->id.'"
@@ -15,7 +15,7 @@ if ($count === 0) {
 }
 
 $comments = $db->get_results('
-    SELECT SQL_CACHE comment_id, comment_link_id, comment_type, comment_user_id
+    SELECT  comment_id, comment_link_id, comment_type, comment_user_id
     FROM comments
     INNER JOIN (
         SELECT DISTINCT(conversation_from)

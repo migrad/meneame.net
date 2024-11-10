@@ -15,12 +15,12 @@ class Time
 
     public static function year($date)
     {
-        return (int) static::strftime('%Y', $date);
+        return (int) (new Time)->strftime('%Y', $date);
     }
 
     public static function yearShort($date)
     {
-        return (int) static::strftime('%g', $date);
+        return (int) (new Time)->strftime('%g', $date);
     }
 
     public static function month($date)
@@ -38,7 +38,7 @@ class Time
             10 => _('octubre'),
             11 => _('noviembre'),
             12 => _('diciembre'),
-        ][(int) static::strftime('%m', $date)];
+        ][(int) (new Time)->strftime('%m', $date)];
     }
 
     public static function monthSort($date)
@@ -56,7 +56,7 @@ class Time
             5 => _('viernes'),
             6 => _('sábado'),
             7 => _('domingo'),
-        ][(int) static::strftime('%u', $date)];
+        ][(int) (new Time)->strftime('%u', $date)];
     }
 
     public static function dayShort($date)
@@ -66,12 +66,12 @@ class Time
 
     public static function hour($date)
     {
-        return static::strftime('%R', $date);
+        return (new Time)->strftime('%R', $date);
     }
 
     public static function dayMonthSortHour($date)
     {
-        return static::strftime('%e', $date).'/'.static::monthSort($date).' - '.static::hour($date).'h';
+        return (new Time)->strftime('%e', $date).'/'.static::monthSort($date).' - '.static::hour($date).'h';
     }
 
     public static function diff($from, $now = 0)

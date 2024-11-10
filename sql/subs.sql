@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `subs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `subs` (
-  `id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` char(12) NOT NULL,
   `enabled` tinyint(1) NOT NULL DEFAULT '1',
   `parent` smallint(5) unsigned NOT NULL DEFAULT '0',

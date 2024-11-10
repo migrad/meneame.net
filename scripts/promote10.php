@@ -1,20 +1,20 @@
 <?php
-include('../config.php');
+include('../www/config.php');
 include('utils.php');
 include(mnminclude.'external_post.php');
 include_once(mnminclude.'ban.php');
 
-define('DEBUG', false);
+define('DEBUG', true);
 
 
 header("Content-Type: text/html");
 
 
-define(MAX, 1.15);
-define (MIN, 1.0);
-define (PUB_MIN, 1);
-define (PUB_MAX, 75);
-define (PUB_PERC, 0.21);
+define('MAX', 1.15);
+define ('MIN', 1.0);
+define ('PUB_MIN', 1);
+define ('PUB_MAX', 75);
+define ('PUB_PERC', 0.21);
 
 $sites = SitesMgr::get_active_sites();
 
@@ -72,25 +72,25 @@ function promote($site_id) {
 	$min_karma_coef = $globals['min_karma_coef'];
 
 
-	$links_queue = $db->get_var("SELECT SQL_NO_CACHE count(*) from sub_statuses WHERE id = $site_id and date > date_sub(now(), interval 24 hour) and status in ('published', 'queued')");
-	$links_queue_all = $db->get_var("SELECT SQL_NO_CACHE count(*) from sub_statuses, links WHERE id = $site_id and date > date_sub(now(), interval 24 hour) and link_id = link and link_votes > 0");
+	$links_queue = $db->get_var("SELECT count(*) from sub_statuses WHERE id = $site_id and date > date_sub(now(), interval 24 hour) and status in ('published', 'queued')");
+	$links_queue_all = $db->get_var("SELECT count(*) from sub_statuses, links WHERE id = $site_id and date > date_sub(now(), interval 24 hour) and link_id = link and link_votes > 0");
 
 
-	$pub_estimation = intval(max(min($links_queue * PUB_PERC, PUB_MAX), PUB_MIN));
-	$interval = intval(86400 / $pub_estimation);
+	$pub_estimation = (int)max(min($links_queue * PUB_PERC, PUB_MAX), PUB_MIN);
+	$interval = (int)(86400 / $pub_estimation);
 
 	$now = time();
 	echo "BEGIN\n";
 	$output .= "<p><b>BEGIN</b>: ".get_date_time($now)."<br/>\n";
 
 
-	$hours = intval($globals['time_enabled_votes']/3600);
+	$hours = (int)($globals['time_enabled_votes'] / 3600);
 	$from_time = "date_sub(now(), interval $hours hour)";
 
-	$last_published = $db->get_var("SELECT SQL_NO_CACHE UNIX_TIMESTAMP(max(date)) from sub_statuses WHERE id = $site_id and status='published'");
+	$last_published = $db->get_var("SELECT UNIX_TIMESTAMP(max(date)) from sub_statuses WHERE id = $site_id and status='published'");
 	if (!$last_published) $last_published = $now - 24*3600*30;
-	$links_published = (int) $db->get_var("select SQL_NO_CACHE count(*) from sub_statuses where id = $site_id and status = 'published' and date > date_sub(now(), interval 24 hour)");
-	$links_published_projection = 4 * (int) $db->get_var("select SQL_NO_CACHE count(*) from sub_statuses where id = $site_id and status = 'published' and date > date_sub(now(), interval 6 hour)");
+	$links_published = (int) $db->get_var("select count(*) from sub_statuses where id = $site_id and status = 'published' and date > date_sub(now(), interval 24 hour)");
+	$links_published_projection = 4 * (int) $db->get_var("select count(*) from sub_statuses where id = $site_id and status = 'published' and date > date_sub(now(), interval 6 hour)");
 
 	$diff = $now - $last_published;
 	// If published and estimation are lower than projection then
@@ -112,8 +112,8 @@ function promote($site_id) {
 	$continue = true;
 	$published=0;
 
-	$past_karma_long = intval($db->get_var("SELECT SQL_NO_CACHE avg(karma) from sub_statuses WHERE id = $site_id and date >= date_sub(now(), interval 7 day) and status='published'"));
-	$past_karma_short = intval($db->get_var("SELECT SQL_NO_CACHE avg(karma) from sub_statuses WHERE id = $site_id and date >= date_sub(now(), interval 12 hour) and status='published'"));
+	$past_karma_long = (int)$db->get_var("SELECT avg(karma) from sub_statuses WHERE id = $site_id and date >= date_sub(now(), interval 7 day) and status='published'");
+	$past_karma_short = (int)$db->get_var("SELECT avg(karma) from sub_statuses WHERE id = $site_id and date >= date_sub(now(), interval 12 hour) and status='published'");
 
 	$past_karma = 0.5 * max(40, $past_karma_long) + 0.5 * max(20, $past_karma_short);
 	$min_past_karma = (int) ($past_karma * $min_karma_coef);
@@ -160,7 +160,7 @@ function promote($site_id) {
 
 	$thumbs_queue = array();
 
-	$links = $db->get_results("SELECT SQL_NO_CACHE link_id, link_karma as karma from sub_statuses, links, users  where $where $sort LIMIT 30");
+	$links = $db->get_results("SELECT link_id, link_karma as karma from sub_statuses, links, users  where $where $sort LIMIT 30");
 	$rows = $db->affected_rows;
 	echo "SELECTED $rows ARTICLES\n";
 
@@ -307,7 +307,7 @@ function publish($site, $link) {
 
 	// Calculate votes average
 	// it's used to calculate and check future averages
-	$votes_avg = (float) $db->get_var("select SQL_NO_CACHE avg(vote_value) from votes, users where vote_type='links' AND vote_link_id=$link->id and vote_user_id > 0 and vote_value > 0 and vote_user_id = user_id and user_level !='disabled'");
+	$votes_avg = (float) $db->get_var("select avg(vote_value) from votes, users where vote_type='links' AND vote_link_id=$link->id and vote_user_id > 0 and vote_value > 0 and vote_user_id = user_id and user_level !='disabled'");
 	if ($votes_avg < $globals['users_karma_avg']) $link->votes_avg = max($votes_avg, $globals['users_karma_avg']*0.97);
 	else $link->votes_avg = $votes_avg;
 
@@ -371,7 +371,7 @@ function get_subs_coef($site_id, $days = 3) {
 
 	$imported = implode(',', $imported);
 
-	$totals = $db->get_results("select SQL_NO_CACHE origen, status, subs.name as name from sub_statuses, subs where sub_statuses.id = $site_id and status in ('queued', 'published') and date > date_sub(now(), interval $days day) and origen in ($imported) and origen = subs.id");
+	$totals = $db->get_results("select origen, status, subs.name as name from sub_statuses, subs where sub_statuses.id = $site_id and status in ('queued', 'published') and date > date_sub(now(), interval $days day) and origen in ($imported) and origen = subs.id");
 	$totals_sent = array();
 	$totals_published = array();
 	$names = array();
@@ -462,11 +462,11 @@ function update_link_karma($site, $link, $past_karma) {
 	// Verify last published from the same site
 	$hours = 8;
 	$min_pub_coef = 0.8;
-	$last_site_published = (int) $db->get_var("select SQL_NO_CACHE UNIX_TIMESTAMP(max(link_date)) from sub_statuses, links where id = $site and status = 'published' and date > date_sub(now(), interval $hours hour) and link_id = link and link_blog = $link->blog ");
+	$last_site_published = (int) $db->get_var("select UNIX_TIMESTAMP(max(link_date)) from sub_statuses, links where id = $site and status = 'published' and date > date_sub(now(), interval $hours hour) and link_id = link and link_blog = $link->blog ");
 	if ($last_site_published > 0) {
 		$pub_coef = $min_pub_coef  + ( 1- $min_pub_coef) * (time() - $last_site_published)/(3600*$hours);
 		$karma_new *= $pub_coef;
-		$link->message .= 'Last published: '. intval((time() - $last_site_published)/3600) . ' hours ago.<br/>';
+		$link->message .= 'Last published: '. (int)((time() - $last_site_published) / 3600) . ' hours ago.<br/>';
 	}
 
 
@@ -504,7 +504,7 @@ function update_link_karma($site, $link, $past_karma) {
 	if ($link->sub_id > 0 && $link->is_sub && $link->sub_owner > 0 && $link->sub_id != $site && $site_info->owner == 0) {
 		$sub_published = $db->get_var("select UNIX_TIMESTAMP(date) from sub_statuses where id = $site and origen = $link->sub_id and status = 'published' and date > date_sub(now(), interval 24 hour) order by date desc limit 1");
 		if ($sub_published > 0) {
-			$m_diff = intval((time() - $sub_published) / 60);
+			$m_diff = (int)((time() - $sub_published) / 60);
 			$c = min(1, max(0.3, $m_diff/1440));
 			$karma_new *= $c;
 			$link->message .= 'Published from the same sub, c' . sprintf(': %4.2f <br/>', $c);
@@ -518,7 +518,7 @@ function update_link_karma($site, $link, $past_karma) {
 	/// Commons votes
 	if ($link->karma > 20) {
 		$days = 7;
-		$commons_votes = $db->get_col("select SQL_NO_CACHE value from sub_statuses, link_commons where id = $site and status = 'published' and sub_statuses.date > date_sub(now(), interval $days day) and link_commons.link = sub_statuses.link order by value asc");
+		$commons_votes = $db->get_col("select `value` from sub_statuses, link_commons where id = $site and status = 'published' and sub_statuses.date > date_sub(now(), interval $days day) and link_commons.link = sub_statuses.link order by value asc");
 		$common = $link->calculate_common_votes();
 		echo "Calculating diversity ($common-" .  count($commons_votes) . ")\n";
 		if ($common != false && $commons_votes && count($commons_votes) > 5) {
@@ -557,7 +557,7 @@ function update_link_karma($site, $link, $past_karma) {
 	// check differences, if > 4 store it
 	if (abs($link->old_karma - $link->karma) > 6) {
 		// Check percentage of low karma votes if difference > 20 (to avoid sending too many messages
-		if ($link->old_karma > $link->karma + 20  && !empty($globals['adm_email']) && intval($link->low_karma_perc) >= 90 && $link->votes > 50) {
+		if ($link->old_karma > $link->karma + 20  && !empty($globals['adm_email']) && (int)$link->low_karma_perc >= 90 && $link->votes > 50) {
 			echo "LOW KARMA WARN $link->uri\n";
 			$subject = _('AVISO: enlace con muchos votos de karma menor que la media');
 			$body = "Perc: $link->low_karma_perc% User votes: $link->votes Negatives: $link->negatives\n\n";

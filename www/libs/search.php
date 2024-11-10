@@ -78,21 +78,21 @@ function sphinx_do_search($by_date = false, $start = 0, $count = 10, $proximity 
 
     if ($_REQUEST['t']) {
         $max_date = time();
-        $min_date = intval($_REQUEST['t']);
+        $min_date = (int)$_REQUEST['t'];
 
         $cl->SetFilterRange('date', $min_date, $max_date);
     }
 
     if ($_REQUEST['h']) {
         $max_date = time();
-        $min_date = $max_date - intval($_REQUEST['h']) * 3600;
+        $min_date = $max_date - (int)$_REQUEST['h'] * 3600;
 
         $cl->SetFilterRange('date', $min_date, $max_date);
     }
 
     if ($_REQUEST['yymm']) {
-        $yymm = intval($_REQUEST['yymm']);
-        $yy = intval($yymm / 100);
+        $yymm = (int)$_REQUEST['yymm'];
+        $yy = (int)($yymm / 100);
         $mm = $yymm - $yy*100;
         $min_date = mktime(0, 0, 0, $mm, 1, $yy);
 
@@ -268,6 +268,10 @@ function sphinx_do_search($by_date = false, $start = 0, $count = 10, $proximity 
 
 function sphinx_doc_hits($q, $index = 'links')
 {
+    global $globals;
+
+    if (!$globals['sphinx_server']) return 0;
+
     $cl = sphinx_client();
 
     if (!$cl) {

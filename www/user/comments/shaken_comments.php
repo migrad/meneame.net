@@ -11,7 +11,7 @@ $query = '
     )
 ';
 
-$count = (int)$db->get_var('SELECT SQL_CACHE COUNT(*) '.$query.';');
+$count = (int)$db->get_var('SELECT  COUNT(*) '.$query.';');
 
 if ($count === 0) {
     return Haanga::Load('user/empty.html');
@@ -28,7 +28,7 @@ if ($sort === 'votes') {
 }
 
 $comments = DbHelper::keyBy($db->get_results('
-    SELECT SQL_CACHE vote_link_id AS id, vote_value AS value
+    SELECT  vote_link_id AS id, vote_value AS value
     '.$query.'
     ORDER BY '.$order.'
     LIMIT '.(int)$offset.', '.(int)$limit.';

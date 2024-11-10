@@ -18,7 +18,7 @@ class UserAuth
     */
     public static function hash($pass, $salt = false, $alg = false)
     {
-        $salt = $salt ?: base64_encode(mcrypt_create_iv(24, MCRYPT_DEV_URANDOM));
+        $salt = $salt ?: base64_encode(random_bytes(32));
         $alg = $alg ?: self::HASH_ALGORITHM;
 
         return $alg.':'.$salt.':'.hash($alg, $salt.$pass);
@@ -88,7 +88,7 @@ class UserAuth
         $user_id = intval($this->u[0]);
 
         $user = $db->get_row(DbHelper::queryPlain('
-            SELECT SQL_CACHE user_id, user_login, SUBSTRING(user_pass, 8, 10) AS pass_frag,
+            SELECT  user_id, user_login, SUBSTRING(user_pass, 8, 10) AS pass_frag,
                 user_level, UNIX_TIMESTAMP(user_validated_date) AS user_date, user_karma,
                 user_email, user_avatar, user_comment_pref, prefs.pref_value AS subs_default
             FROM users

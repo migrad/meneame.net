@@ -476,7 +476,7 @@ class SitesMgr
         if (!$memcache_followers || false === $followers = memcache_mget($memcache_followers)) {
             // Not in memcache
             $followers = $db->get_var('
-                SELECT SQL_CACHE COUNT(pref_user_id)
+                SELECT  COUNT(pref_user_id)
                 FROM prefs WHERE (
                     pref_key = "sub_follow"
                     AND pref_value = "'.self::my_id().'"
