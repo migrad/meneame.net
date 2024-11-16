@@ -197,7 +197,8 @@ CREATE TABLE `comments` (
   KEY `comment_link_id_2` (`comment_link_id`,`comment_date`),
   KEY `comment_date` (`comment_date`),
   KEY `comment_user_id` (`comment_user_id`,`comment_date`),
-  KEY `comment_link_id` (`comment_link_id`,`comment_order`)
+  KEY `comment_link_id` (`comment_link_id`,`comment_order`),
+  FULLTEXT KEY `comment_content` (`comment_content`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
