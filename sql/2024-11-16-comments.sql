@@ -1,0 +1,1 @@
+CREATE FULLTEXT INDEX comment_content ON comments (comment_content);
