@@ -282,6 +282,7 @@ $globals['jms_cache'] = '/var/tmp';
 $globals['haanga_cache'] = '/var/tmp';
 $globals['haanga_templates'] = 'templates';
 
+$globals['search_type'] = 'mysql'; // sphinx,lucene,elastic
 //$globals['lucene_dir'] = mnmpath.'/'.$globals['cache_dir'].'/lucene_links';
 $globals['sphinx_server'] = false; //'localhost';
 $globals['sphinx_port'] = 9312;
