@@ -59,7 +59,7 @@ echo '</div>'."\n";
 /*** END SIDEBAR ***/
 
 $options = array(
-    'w' => array('links', 'posts', 'comments'),
+    'w' => array('links' => _('Enlaces'), 'posts' => _('Notas'), 'comments' => _('Comentarios'), 'articles' => _('Artículos')),
     'p' => array('' => _('campos...'), 'url', 'tags', 'title', 'site'),
     's' => array('' => _('estado...'), 'published', 'queued', 'discard', 'autodiscard', 'abuse'),
     'h' => array('' => _('período...'), 24 => _('24 horas'), 48 => _('48 horas'), 24 * 7 => _('última semana'), 24 * 30 => _('último mes'), 24 * 180 => _('6 meses'), 24 * 365 => _('1 año')),
