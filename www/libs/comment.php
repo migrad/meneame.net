@@ -641,10 +641,10 @@ class Comment extends LCPBase
             ($link->votes > 0)
             && ($link->date > ($globals['now'] - $globals['time_enabled_comments'] * 1.01))
             && ($link->comments < $globals['max_comments'])
-            && (intval($_POST['link_id']) == $link->id)
+            && ((int)$_POST['link_id'] == $link->id)
             && $current_user->authenticated
-            && (intval($_POST['user_id']) == $current_user->user_id)
-            && (intval($_POST['randkey']) > 0)
+            && ((int)$_POST['user_id'] == $current_user->user_id)
+            && ((int)$_POST['randkey'] > 0)
         )) {
             return _('comentario o usuario incorrecto');
         }
@@ -657,8 +657,8 @@ class Comment extends LCPBase
 
         $comment->link = $link->id;
         $comment->ip = $globals['user_ip'];
-        $comment->randkey = intval($_POST['randkey']);
-        $comment->author = intval($_POST['user_id']);
+        $comment->randkey = (int)$_POST['randkey'];
+        $comment->author = (int)$_POST['user_id'];
         $comment->karma = round($current_user->user_karma);
         $comment->content = clean_text_with_tags($_POST['comment_content'], 0, false, 10000);
 
@@ -668,7 +668,7 @@ class Comment extends LCPBase
         }
 
         // Don't allow to comment with a clone
-        $hours = intval($globals['user_comments_clon_interval']);
+        $hours = (int)$globals['user_comments_clon_interval'];
 
         if ($hours > 0) {
             $clones = $current_user->get_clones($hours + 1);
@@ -696,7 +696,7 @@ class Comment extends LCPBase
             }
 
             // Avoid floods with clones from the same IP
-            if (intval($db->get_var("select count(*) from comments where comment_link_id = $link->id and comment_ip='$comment->ip' and comment_user_id != $comment->author")) > 1) {
+            if ((int)$db->get_var("select count(*) from comments where comment_link_id = $link->id and comment_ip='$comment->ip' and comment_user_id != $comment->author") > 1) {
                 syslog(LOG_NOTICE, "Meneame, comment astroturfing ($current_user->user_login, $comment->ip)");
                 return _('demasiados comentarios desde la misma IP con usuarios diferentes');
             }
