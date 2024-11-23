@@ -180,7 +180,7 @@ DROP TABLE IF EXISTS `comments`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `comments` (
   `comment_id` int(20) NOT NULL AUTO_INCREMENT,
-  `comment_type` enum('normal','admin','private') COLLATE utf8_spanish_ci NOT NULL DEFAULT 'normal',
+  `comment_type` enum('normal','admin','private','rel') COLLATE utf8_spanish_ci NOT NULL DEFAULT 'normal',
   `comment_randkey` int(11) NOT NULL DEFAULT '0',
   `comment_parent` int(20) DEFAULT '0',
   `comment_link_id` int(20) NOT NULL DEFAULT '0',

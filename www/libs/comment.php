@@ -21,6 +21,7 @@ class Comment extends LCPBase
     public $content = '';
     public $read = false;
     public $ip = '';
+    public $type = '';
     public $link_object = null;
     public $strike = null;
 
@@ -171,8 +172,11 @@ class Comment extends LCPBase
 
         if ($this->type === 'admin') {
             $comment_type = 'admin';
-        } else {
+        } elseif ($this->type === '') {
             $comment_type = 'normal';
+        }
+        else {
+            $comment_type = $this->type;
         }
 
         $db->transaction();
@@ -187,7 +191,7 @@ class Comment extends LCPBase
                 syslog(LOG_INFO, "Failed to assign order to comment $this->id in insert");
                 $this->order = 0;
             } else {
-                $this->order = intval($previous) + 1;
+                $this->order = (int)$previous + 1;
             }
 
             $r = $db->query("INSERT INTO comments (comment_user_id, comment_link_id, comment_type, comment_karma, comment_ip_int, comment_ip, comment_date, comment_randkey, comment_content, comment_order) VALUES ($this->author, $this->link, '$comment_type', $this->karma, $this->ip_int, '$this->ip', FROM_UNIXTIME($this->date), $this->randkey, '$comment_content', $this->order)");
@@ -243,7 +247,7 @@ class Comment extends LCPBase
             return false;
         }
 
-        $order = intval($db->get_var("select count(*) from comments where comment_link_id=$this->link and comment_id <= $this->id FOR UPDATE"));
+        $order = (int)$db->get_var("select count(*) from comments where comment_link_id=$this->link and comment_id <= $this->id FOR UPDATE");
         if (!$order) {
             syslog(LOG_INFO, "Failed to get order in update_order for $this->id, old value $this->order");
             return false;
@@ -371,6 +375,9 @@ class Comment extends LCPBase
             }
         } elseif ($this->type === 'admin') {
             $this->css_class .= ' admin';
+        }
+        elseif ($this->type === 'rel') {
+            $this->css_class .= ' rel';
         } else {
             if ($globals['comment_highlight_karma'] > 0 && $this->karma > $globals['comment_highlight_karma']) {
                 $this->css_class .= ' high';
@@ -401,6 +408,8 @@ class Comment extends LCPBase
         if ($link && ($this->can_reply = $link->comments_allowed())) {
             $this->can_reply = $current_user->user_id > 0 && $this->date > $globals['now'] - $globals['time_enabled_comments'];
         }
+
+        if ($this->type === 'rel') $this->can_reply = false;
 
         $this->can_report = $this->can_reply
             && Report::check_min_karma()
@@ -662,8 +671,12 @@ class Comment extends LCPBase
         $comment->karma = round($current_user->user_karma);
         $comment->content = clean_text_with_tags($_POST['comment_content'], 0, false, 10000);
 
-        // Check if is an admin comment
-        if ($current_user->user_level === 'god' && $_POST['type'] === 'admin') {
+        // Validate if the comment is a command. If it is, it is assigned a comment type other than "normal"
+        $comment->checkCommand();
+
+        // Check if is an admin comment.
+        // If the comment already has a type assigned, it is possible that it is a command. We avoid changing it.
+        if ($current_user->user_level === 'god' && $_POST['type'] === 'admin' && $comment->type !== '') {
             $comment->type = 'admin';
         }
 
@@ -939,5 +952,12 @@ class Comment extends LCPBase
 
         $this->strike = $strikes[$this->id];
         $this->hide_comment = true;
+    }
+
+    public function checkCommand() {
+        if (preg_match('/^!rel:/', $this->content) !== FALSE) {
+            $this->type = 'rel';
+            $this->content = preg_replace('/^!rel:\s(.*)$/', _('Relacionada: ') . '$1', $this->content);
+        }
     }
 }

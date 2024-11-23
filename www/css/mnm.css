@@ -2368,6 +2368,10 @@ select.options-comments {
     border: 1px solid #AAA;
 }
 
+.comment.rel .comment-body {
+    background: #ffd4d4;
+}
+
 .collapsed > .comment.high .comment-body {
     padding-right: 10px;
 }
@@ -2499,6 +2503,10 @@ li .comment-header .comment-expand {
 
 .comment-avatar-large .comment-header .username {
     font-size: 15px;
+}
+
+.comment.rel comment-header, .comment.rel comment-header a, .comment.rel a.username, .comment.rel .comment-order {
+    color: #643421;
 }
 
 .comment-text {
